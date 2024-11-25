@@ -501,6 +501,7 @@
  - **gem.cbc.ca**: [*cbcgem*](## "netrc machine")
  - **gem.cbc.ca:live**
  - **gem.cbc.ca:playlist**
+ - **generic**: Generic downloader that works on some sites
  - **Genius**
  - **GeniusLyrics**
  - **GetCourseRu**: [*getcourseru*](## "netrc machine")
@@ -1792,3 +1793,4 @@
  - **zoom**
  - **Zype**
  - **generic**: Generic downloader that works on some sites
+ - **Toutiao**

@@ -854,6 +854,7 @@ from .iwara import (
     IwaraUserIE,
 )
 from .ixigua import IxiguaIE
+from .toutiao import ToutiaoIE
 from .izlesene import IzleseneIE
 from .jable import (
     JableIE,

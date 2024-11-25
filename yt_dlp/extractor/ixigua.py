@@ -33,7 +33,13 @@ class IxiguaIE(InfoExtractor):
     }]
 
     def _get_json_data(self, webpage, video_id):
+        # print(webpage)
+        with open("xigua.html", "w") as f:
+            f.write(webpage)
         js_data = get_element_by_id('SSR_HYDRATED_DATA', webpage)
+        with open("xigua_ssr.json", "w") as f:
+            f.write(js_data)
+        # print(js_data)
         if not js_data:
             if self._cookies_passed:
                 raise ExtractorError('Failed to get SSR_HYDRATED_DATA')
@@ -50,7 +56,8 @@ class IxiguaIE(InfoExtractor):
         ):
             for media in traverse_obj(json_data, (..., *path, lambda _, v: v['main_url'])):
                 yield {
-                    'url': base64.b64decode(media['main_url']).decode(),
+                    # 'url': base64.b64decode(media['main_url']).decode(),
+                    'url': self._aes_decrypt(media['main_url']),
                     'width': int_or_none(media.get('vwidth')),
                     'height': int_or_none(media.get('vheight')),
                     'fps': int_or_none(media.get('fps')),
@@ -60,13 +67,99 @@ class IxiguaIE(InfoExtractor):
                     'ext': 'mp4',
                     **override,
                 }
+    
+    def _aes_decrypt(self,  data: str , ptk) -> str:
+        # from Crypto.Cipher import AES
+        # from Crypto.Util.Padding import unpad
+        # data = base64.b64decode(data)
+        # key = ptk.encode()
+        # iv = key[:16]
 
+        # # mode 为 CBC、pad 为 PKcs7
+        # cipher = AES.new(key, AES.MODE_CBC, iv)
+        # res = cipher.decrypt(data)
+        # res = unpad(res, AES.block_size)
+        # res = base64.b64decode(res).decode()
+        # return res
+        from cryptography.hazmat.primitives import padding
+        from cryptography.hazmat.primitives.ciphers import Cipher, algorithms, modes
+        from cryptography.hazmat.backends import default_backend
+        data = base64.b64decode(data)
+        key = ptk.encode()
+        iv = key[:16]
+
+        cipher = Cipher(algorithms.AES(key), modes.CBC(iv), backend=default_backend())
+        decryptor = cipher.decryptor()
+        decrypted_data = decryptor.update(data) + decryptor.finalize()
+        
+        # # 去除 PKcs7 填充
+        # unpadder = cryptography.hazmat.primitives.padding.PKCS7(algorithms.AES.block_size).unpadder()
+        # unpadded_data = unpadder.update(decrypted_data) + unpadder.finalize()
+        # 使用 PKCS7 填充进行解除填充
+        unpadder = padding.PKCS7(algorithms.AES.block_size).unpadder()
+        unpadded_data = unpadder.update(decrypted_data) + unpadder.finalize()
+        
+        res = base64.b64decode(unpadded_data).decode()
+        return res
+
+    def search_key_in_json(self,data, search_key):
+        if isinstance(data, dict):
+            if search_key in data:
+                return data[search_key]
+            for key, value in data.items():
+                result = self.search_key_in_json(value, search_key)
+                if result is not None:
+                    return result
+        elif isinstance(data, list):
+            for item in data:
+                result = self.search_key_in_json(item, search_key)
+                if result is not None:
+                    return result
+        return None
+    
     def _real_extract(self, url):
+        video_data = None
+        import json
         video_id = self._match_id(url)
         webpage = self._download_webpage(url, video_id)
         json_data = self._get_json_data(webpage, video_id)['anyVideo']['gidInformation']['packerData']['video']
+        # print(json_data)
+        # json.dump(json_data, open("xigua_before.json","w"))
+        
 
-        formats = list(self._media_selector(json_data.get('videoResource')))
+        videoResource = json_data.get('videoResource')
+        dash = videoResource['dash'] 
+        video_list = self.search_key_in_json(dash,'dynamic_video_list')
+        # print(videoResource['normal'])
+        # dash = videoResource['normal'] 
+        # video_list = list(dash['video_list'].values())
+        if dash == None or dash == {}:
+            print("dash in normal")
+            dash = videoResource['normal'] 
+
+        # print(list(dash['video_list'].values()))
+        if video_list == None or video_list == []:
+            print("no dynamic video list")
+            video_list = list(dash['video_list'].values())
+        # dash = videoResource.get('normal')
+        ptk = dash.get('ptk')
+        
+        # ext': 'mp4',
+        # video_data =next((obj for obj in video_list ), list(video_list )[len(video_list  )- 1])
+        video_data = min(video_list, key=lambda x: x['quality_type'])
+        
+        main_url  = video_data['main_url']
+        # main_url  = video_data['backup_url_1']
+        dec_url =  self._aes_decrypt(main_url,ptk)
+        print([self._aes_decrypt(one["main_url"],ptk) for one in video_list])
+        video_data['url'] = dec_url
+        video_data['ext'] ='mp4'
+        # self.ptk = ptk
+        # print(self.ptk)
+        # formats = list(self._media_selector(json_data.get('videoResource')))
+        formats = [video_data]
+        print(formats)
+        # json.dump(formats, open("xigua.json","w"))
         return {
             'id': video_id,
             'title': json_data.get('title'),
