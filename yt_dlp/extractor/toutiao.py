@@ -37,8 +37,14 @@ class ToutiaoIE(InfoExtractor):
         webpage = self._download_webpage(url, video_id)
         # print(video_id, webpage)
         json_data = self._get_json_data(webpage, video_id)
+        # print(json_data)
+        to_parse_data = json_data["data"]["initialVideo"]["videoPlayInfo"]
+        if "video_list" in to_parse_data.keys():
+            to_parse_data = to_parse_data["video_list"]
+        else:
+            to_parse_data = to_parse_data["dynamic_video"]["dynamic_video_list"]
         formats = [ ]
-        for one in json_data["data"]["initialVideo"]["videoPlayInfo"]["video_list"]:
+        for one in to_parse_data:
             new_one = {
                     'url': one["main_url"],
                     'width': one["video_meta"]["vwidth"],
