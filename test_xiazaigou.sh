@@ -1,0 +1,21 @@
+curl 'https://www.xiazaitool.com/video/parseVideoUrl' \
+  -H 'accept: application/json, text/javascript, */*; q=0.01' \
+  -H 'accept-language: en,zh-CN;q=0.9,zh;q=0.8' \
+  -H 'authorization: null' \
+  -H 'cache-control: no-cache' \
+  -H 'content-type: application/json' \
+  -H 'cookie: Hm_lvt_057901c4864e18220f403e79d3fc537c=1718287527; _s_prefix=d9602ab0c328a2f4a2a7abe627d43adf; Hm_lpvt_057901c4864e18220f403e79d3fc537c=1718288685' \
+  -H 'origin: https://www.xiazaitool.com' \
+  -H 'pragma: no-cache' \
+  -H 'priority: u=1, i' \
+  -H 'referer: https://www.xiazaitool.com/' \
+  -H 'sec-ch-ua: "Google Chrome";v="125", "Chromium";v="125", "Not.A/Brand";v="24"' \
+  -H 'sec-ch-ua-mobile: ?0' \
+  -H 'sec-ch-ua-platform: "Windows"' \
+  -H 'sec-fetch-dest: empty' \
+  -H 'sec-fetch-mode: cors' \
+  -H 'sec-fetch-site: same-origin' \
+  -H 'timestamp: 1718288823877' \
+  -H 'user-agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/125.0.0.0 Safari/537.36' \
+  -H 'x-requested-with: XMLHttpRequest' \
+  --data-raw '{"url":"https://www.ixigua.com/7351735013819777547?logTag=d0e9ac3b78552b1c6584","platform":"xigua","params":"RYVdU8BOhEGR+1#aznTTnRsVaSE5Uk7hmnM4Tla#ol34RfRQf#Sa4HLRnJzlwGoBndQYgPl9#OYf+x0NVEIdw9+huG7XoKzA7J6xTgb21vs3m9RvOtG4a7ufqxLOCZji47TnMTsRvfhKQ+CrZznM4w=="}'
