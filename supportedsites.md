@@ -1450,7 +1450,7 @@
  - **tiktok:live**
  - **tiktok:sound**: (**Currently broken**)
  - **tiktok:tag**: (**Currently broken**)
- - **tiktok:user**: (**Currently broken**)
+ - **tiktok:user**
  - **TLC**
  - **TMZ**
  - **TNAFlix**
@@ -1461,6 +1461,7 @@
  - **tokfm:podcast**
  - **ToonGoggles**
  - **tou.tv**: [*toutv*](## "netrc machine")
+ - **Toutiao**
  - **Toypics**: Toypics video (**Currently broken**)
  - **ToypicsUser**: Toypics user profile (**Currently broken**)
  - **TrailerAddict**: (**Currently broken**)
@@ -1793,4 +1794,3 @@
  - **zoom**
  - **Zype**
  - **generic**: Generic downloader that works on some sites
- - **Toutiao**
